@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="da1cf4b4-5b8d-4c31-b7d8-3e843f5847c5" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="1fXIKu2jijRvjVIpkKBR0EPabIy" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="CLionExternalConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="cachelab_handout" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cachelab_handout" TARGET_NAME="cachelab_handout" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="cachelab_handout" RUN_TARGET_NAME="cachelab_handout">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="da1cf4b4-5b8d-4c31-b7d8-3e843f5847c5" name="Default Changelist" comment="" />
+      <created>1596357949996</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1596357949996</updated>
+      <workItem from="1596357952204" duration="72000" />
+      <workItem from="1596358033599" duration="143000" />
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="506" y="222" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596358153106">
+      <screen x="62" y="0" width="1986" height="1152" />
+    </state>
+    <state x="506" y="222" key="#com.intellij.execution.impl.EditConfigurationsDialog/62.0.1986.1152@62.0.1986.1152" timestamp="1596358153106" />
+    <state x="783" y="272" key="FileChooserDialogImpl" timestamp="1596358164462">
+      <screen x="62" y="0" width="1986" height="1152" />
+    </state>
+    <state x="783" y="272" key="FileChooserDialogImpl/62.0.1986.1152@62.0.1986.1152" timestamp="1596358164462" />
+    <state width="800" height="255" key="ImportCMakeProjectWizard.bottomPanel" timestamp="1596358172683">
+      <screen x="62" y="0" width="1986" height="1152" />
+    </state>
+    <state width="800" height="255" key="ImportCMakeProjectWizard.bottomPanel/62.0.1986.1152@62.0.1986.1152" timestamp="1596358172683" />
+    <state width="800" height="595" key="ImportCMakeProjectWizard.topPanel" timestamp="1596358172683">
+      <screen x="62" y="0" width="1986" height="1152" />
+    </state>
+    <state width="800" height="595" key="ImportCMakeProjectWizard.topPanel/62.0.1986.1152@62.0.1986.1152" timestamp="1596358172683" />
+    <state x="557" y="220" key="SettingsEditor" timestamp="1596358149117">
+      <screen x="62" y="0" width="1986" height="1152" />
+    </state>
+    <state x="557" y="220" key="SettingsEditor/62.0.1986.1152@62.0.1986.1152" timestamp="1596358149117" />
+  </component>
+</project>

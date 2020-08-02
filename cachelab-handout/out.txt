@@ -1,0 +1,8 @@
+L 10,1 miss
+M 20,1 miss evict hit
+L 22,1 hit
+S 18,1 miss evict
+L 110,1 miss evict
+L 210,1 miss evict
+M 12,1 miss evict hit
+hits:3 misses:6 evictions:5

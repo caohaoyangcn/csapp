@@ -1,0 +1,3 @@
+D:/ShareFolder/CSAPP-Lab/cache-lab/cachelab-handout/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/ShareFolder/CSAPP-Lab/cache-lab/cachelab-handout/cmake-build-debug/CMakeFiles/cachelab_handout.dir
+D:/ShareFolder/CSAPP-Lab/cache-lab/cachelab-handout/cmake-build-debug/CMakeFiles/rebuild_cache.dir
