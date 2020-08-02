@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     char buf[BUFF_SIZE];
     char op;
     int size;
-    unsigned long address;
+    unsigned address;
     unsigned int setInd, tag, blockOffset;
     char* info;
     int opCount = 0;
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
         blockOffset = address & blockOffsetMask;
         tag = address ^ (setInd | blockOffset);
         setInd >>= blockBits;
-        int baseInd = (setInd >> blockBits) * E;
+        int baseInd = setInd * E;
         bool hit = false;
         int vacant = baseInd;
         opCount += 1;
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
                 }
                 if (!hit) {
                     if (usage[vacant] != 0) {
-                        info = "miss evict hit";
+                        info = "miss eviction hit";
                         missCount += 1;
                         evictionCount += 1;
                         hitCount += 1;
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
                 }
                 if (!hit) {
                     if (usage[vacant] != 0) {
-                        info = "miss evict";
+                        info = "miss eviction";
                         missCount += 1;
                         evictionCount += 1;
                     }
@@ -148,7 +148,10 @@ int main(int argc, char* argv[])
         default:
             break;
         }
-        printTrace(op, address, size, info);
+        if (vFlag) {
+            printTrace(op, address, size, info);
+        }
+        
     }
     printSummary(hitCount, missCount, evictionCount);
     return 0;
