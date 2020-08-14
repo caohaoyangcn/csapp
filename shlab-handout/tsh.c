@@ -9,9 +9,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <signal.h>
+#include <bits/sigaction.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
+// #include <csapp.h>
 
 /* Misc manifest constants */
 #define MAXLINE    1024   /* max line size */
@@ -131,22 +133,22 @@ int main(int argc, char **argv)
     /* Execute the shell's read/eval loop */
     while (1) {
 
-	/* Read command line */
-	if (emit_prompt) {
-	    printf("%s", prompt);
-	    fflush(stdout);
-	}
-	if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
-	    app_error("fgets error");
-	if (feof(stdin)) { /* End of file (ctrl-d) */
-	    fflush(stdout);
-	    exit(0);
-	}
+        /* Read command line */
+        if (emit_prompt) {
+            printf("%s", prompt);
+            fflush(stdout);
+        }
+        if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
+            app_error("fgets error");
+        if (feof(stdin)) { /* End of file (ctrl-d) */
+            fflush(stdout);
+            exit(0);
+        }
 
-	/* Evaluate the command line */
-	eval(cmdline);
-	fflush(stdout);
-	fflush(stdout);
+        /* Evaluate the command line */
+        eval(cmdline);
+        fflush(stdout);
+        fflush(stdout);
     } 
 
     exit(0); /* control never reaches here */
@@ -162,10 +164,48 @@ int main(int argc, char **argv)
  * each child process must have a unique process group ID so that our
  * background children don't receive SIGINT (SIGTSTP) from the kernel
  * when we type ctrl-c (ctrl-z) at the keyboard.  
+ * 70 lines
 */
 void eval(char *cmdline) 
 {
-    return;
+    int bg;
+
+    char buf[MAXLINE];
+    char* argv[MAXARGS];
+    sigset_t mask_chld, prev_mask;
+    pid_t pid;
+    sigemptyset(&mask_chld);
+    sigaddset(&mask_chld, SIGCHLD);
+
+
+    strcpy(buf, cmdline);
+    bg = parseline(buf, argv);
+    if (argv[0] == NULL) {
+        return;
+    }
+    if (!builtin_cmd(argv)) {
+        sigprocmask(SIG_BLOCK, &mask_chld, &prev_mask);
+        if ((pid = fork()) == 0) {
+            sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+            setpgid(0, 0);
+            if (execve(argv[0], argv, environ) < 0) {
+                if (errno == ENOENT) {
+                    printf("%s: Command not found\n", argv[0]);
+                    exit(0);
+                }
+            }
+        }
+        else {
+            addjob(jobs, pid, (bg == 1?BG:FG), buf);
+            sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+            if (bg) {
+                printf("[%d] (%d) %s", nextjid-1, pid, buf);
+            }
+            else {
+                waitfg(pid);
+            }
+        }
+    }
 }
 
 /* 
@@ -228,26 +268,98 @@ int parseline(const char *cmdline, char **argv)
 /* 
  * builtin_cmd - If the user has typed a built-in command then execute
  *    it immediately.  
+ * 25 lines
  */
 int builtin_cmd(char **argv) 
 {
-    return 0;     /* not a builtin command */
+    char* cmd = argv[0];
+    if (strcmp(cmd, "quit") == 0) {
+        exit(0);
+    }
+    else if (strcmp(cmd, "jobs") == 0) {
+        listjobs(jobs);
+        return 1;
+    }
+    else if (strcmp(cmd, "bg") == 0 || strcmp(cmd, "fg") == 0) {
+        do_bgfg(argv);
+        return 1;
+    }
+    else {
+        return 0;     /* not a builtin command */
+    }
 }
 
 /* 
  * do_bgfg - Execute the builtin bg and fg commands
+ * 50 lines
  */
 void do_bgfg(char **argv) 
 {
+    char* cmd, *job_id;
+    cmd = argv[0]; 
+    job_id = argv[1];
+    if (job_id == NULL) {
+        printf("%s command requires PID or %%jobid argument\n", cmd);
+        return;
+    }
+
+    struct job_t* job;
+    int pid;
+    int jid;
+
+
+    // <job> argument JID
+    if (job_id[0] == '%') {
+        jid = (int) strtol(job_id+1, NULL, 10);
+        if (jid == 0) {
+            printf("%s: argument must be a PID or %%jobid\n", cmd);
+            return;
+        }
+        job = getjobjid(jobs, jid);
+        
+    }
+    // <job> argument PID
+    else {
+        pid = (int) strtol(job_id, NULL, 10);
+        if (pid == 0) {
+            printf("%s: argument must be a PID or %%jobid\n", cmd);
+            return;
+        }
+        job = getjobpid(jobs, pid);
+    }
+
+    if (job) {
+        if (strcmp(cmd, "bg") == 0) {
+            job->state = BG;
+            kill(-(job->pid), SIGCONT);
+            printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
+        }
+        else if (strcmp(cmd, "fg") == 0) {
+            job->state = FG;
+            kill(-(job->pid), SIGCONT);
+            waitfg(job->pid);
+        }
+    }
+    else {
+        if (job_id[0] == '%') {
+            printf("%%%d: No such job\n", jid);
+        }
+        else {
+            printf("(%d): No such process\n", pid);
+        }
+    }
     return;
 }
 
 /* 
  * waitfg - Block until process pid is no longer the foreground process
+ * 20 lines
  */
 void waitfg(pid_t pid)
 {
-    return;
+    while (fgpid(jobs) == pid) {
+        sleep(1);
+    }
 }
 
 /*****************
@@ -260,30 +372,63 @@ void waitfg(pid_t pid)
  *     received a SIGSTOP or SIGTSTP signal. The handler reaps all
  *     available zombie children, but doesn't wait for any other
  *     currently running children to terminate.  
+ * 80 lines
  */
 void sigchld_handler(int sig) 
 {
-    return;
+    pid_t pid;
+    int status;
+    sigset_t mask_all, prev_mask;
+    sigfillset(&mask_all);
+    while ((pid = waitpid(-1, &status, WUNTRACED | WNOHANG)) > 0) 
+    {
+        sigprocmask(SIG_BLOCK, &mask_all, &prev_mask);
+        if (WIFSTOPPED(status)) {
+            struct job_t* ptr_job;
+            ptr_job = getjobpid(jobs, pid);
+            if (ptr_job) {
+                ptr_job->state = ST;
+                printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid, WSTOPSIG(status));
+            }
+            sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+            continue;
+        }
+        if (WIFSIGNALED(status)) {
+            printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(status));
+        }
+        deletejob(jobs, pid);
+        sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+    }
 }
 
 /* 
  * sigint_handler - The kernel sends a SIGINT to the shell whenver the
  *    user types ctrl-c at the keyboard.  Catch it and send it along
  *    to the foreground job.  
+ * 15 lines
  */
 void sigint_handler(int sig) 
 {
-    return;
+    pid_t pid;
+
+    if ((pid = fgpid(jobs)) > 0) {
+        kill(-pid, sig);
+    }
 }
 
 /*
  * sigtstp_handler - The kernel sends a SIGTSTP to the shell whenever
  *     the user types ctrl-z at the keyboard. Catch it and suspend the
  *     foreground job by sending it a SIGTSTP.  
+ * 15 lines
  */
 void sigtstp_handler(int sig) 
 {
-    return;
+    pid_t pid;
+
+    if ((pid = fgpid(jobs)) > 0) {
+        kill(-pid, sig);
+    }
 }
 
 /*********************
