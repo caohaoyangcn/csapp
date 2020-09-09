@@ -32,13 +32,13 @@ int main(int argc, char **argv)
 
     listenfd = Open_listenfd(argv[1]);
     while (1) {
-	clientlen = sizeof(clientaddr);
-	connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen); //line:netp:tiny:accept
-        Getnameinfo((SA *) &clientaddr, clientlen, hostname, MAXLINE, 
+        clientlen = sizeof(clientaddr);
+        connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen); //line:netp:tiny:accept
+        Getnameinfo((SA *) &clientaddr, clientlen, hostname, MAXLINE,
                     port, MAXLINE, 0);
         printf("Accepted connection from (%s, %s)\n", hostname, port);
-	doit(connfd);                                             //line:netp:tiny:doit
-	Close(connfd);                                            //line:netp:tiny:close
+        doit(connfd);                                             //line:netp:tiny:doit
+        Close(connfd);                                            //line:netp:tiny:close
     }
 }
 /* $end tinymain */
@@ -118,7 +118,7 @@ void read_requesthdrs(rio_t *rp)
  *             return 0 if dynamic content, 1 if static
  */
 /* $begin parse_uri */
-int parse_uri(char *uri, char *filename, char *cgiargs) 
+int parse_uri(char *uri, char *filename, char *cgiargs)
 {
     char *ptr;
 
@@ -136,7 +136,7 @@ int parse_uri(char *uri, char *filename, char *cgiargs)
 	    strcpy(cgiargs, ptr+1);
 	    *ptr = '\0';
 	}
-	else 
+	else
 	    strcpy(cgiargs, "");                         //line:netp:parseuri:endextract
 	strcpy(filename, ".");                           //line:netp:parseuri:beginconvert2
 	strcat(filename, uri);                           //line:netp:parseuri:endconvert2
